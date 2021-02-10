@@ -2,7 +2,7 @@
 // @id              inventoryParser
 // @name            IITC Plugin: Inventory Parser
 // @category        Info
-// @version         0.0.4
+// @version         0.0.5
 // @namespace	    https://github.com/633KYN35D/iitc-inventory-parser
 // @downloadURL	    https://github.com/633KYN35D/iitc-inventory-parser/raw/main/inventoryParser.user.js
 // @homepageURL	    https://github.com/633KYN35D/iitc-inventory-parser/
@@ -163,6 +163,18 @@ function wrapper(plugin_info) {
         const countList = Object.values(countMap);
         countList.sort((a, b) => {
             if (a.resourceType === b.resourceType) {
+                if(a.level !== undefined || b.level !== undefined) {
+                    if (a.level === undefined || b.level === undefined || a.level === b.level) {
+                        return 0;
+                    }
+                    return a.level > b.level ? 1 : -1;
+                }
+                if(a.rarity !== undefined || b.rarity !== undefined) {
+                    if (a.rarity === undefined || b.rarity === undefined || a.rarity === b.level) {
+                        return 0;
+                    }
+                    return a.rarity > b.rarity ? 1 : -1;
+                }
                 return 0;
             }
             return a.resourceType > b.resourceType ? 1 : -1;

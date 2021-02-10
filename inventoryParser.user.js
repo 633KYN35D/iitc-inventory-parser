@@ -20,7 +20,18 @@ function wrapper(plugin_info) {
     if (typeof window.plugin !== "function") window.plugin = function () {
     };
     const KEY_SETTINGS = "plugin-inventory-parser";
-
+    const displayNames = {
+        FRACK: 'Portal Fracker',
+        FW_RES: 'Fireworks - Resistance',
+        FW_ENL: 'Fireworks - Enlightened',
+        BN_BLM: 'Beacon - Black Lives Matter',
+        ENL: 'Beacon - Enlightened',
+        RES: 'Beacon - Resistance',
+        MEET: 'Beacon - Meetup',
+        NIA: 'Beacon - Niantic',
+        TOASTY: 'Beacon - Toast',
+        TARGET: 'Beacon - Target'
+    };
     window.plugin.inventoryParser = function () {
     };
 
@@ -66,17 +77,28 @@ function wrapper(plugin_info) {
                 countMap[key].count = 0;
                 countMap[key].details = {};
             }
+            countMap[key].displayName = (en[item[2].flipCard.flipCardType] !== undefined) ? en[item[2].flipCard.flipCardType] : item[2].flipCard.flipCardType;
             countMap[key].flipCardType = item[2].flipCard.flipCardType;
             countMap[key].count += incBy;
             if (!countMap[key].details[keyLoc]) countMap[key].details[keyLoc] = 0;
             countMap[key].details[keyLoc] += incBy;
         } else if (item[2] && item[2].resource) {
-            const key = `${item[2].resource.resourceType} ${item[2].resource.resourceRarity}`;
+            var key = `${item[2].resource.resourceType} ${item[2].resource.resourceRarity}`;
+            var displayName = (en[item[2].resource.resourceType] !== undefined) ? en[item[2].resource.resourceType] : item[2].resource.resourceType;
+            if (item[2].resource.resourceType === "PLAYER_POWERUP") {
+                key = item[2].playerPowerupResource.playerPowerupEnum;
+                displayName = (en[item[2].playerPowerupResource.playerPowerupEnum] !== undefined) ? en[item[2].playerPowerupResource.playerPowerupEnum] : item[2].playerPowerupResource.playerPowerupEnum;
+            }
+            if (item[2].resource.resourceType === "PORTAL_POWERUP") {
+                key = item[2].timedPowerupResource.designation;
+                displayName = (en[item[2].timedPowerupResource.designation] !== undefined) ? en[item[2].timedPowerupResource.designation] : item[2].timedPowerupResource.designation;
+            }
             if (!countMap[key]) {
                 countMap[key] = item[2].resource;
                 countMap[key].count = 0;
                 countMap[key].details = {};
             }
+            countMap[key].displayName = (displayNames[displayName] !== undefined) ? displayNames[displayName] : displayName;
             countMap[key].count += incBy;
             if (!countMap[key].details[keyLoc]) countMap[key].details[keyLoc] = 0;
             countMap[key].details[keyLoc] += incBy;
@@ -87,6 +109,7 @@ function wrapper(plugin_info) {
                 countMap[key].count = 0;
                 countMap[key].details = {};
             }
+            countMap[key].displayName = (en[item[2].resourceWithLevels.resourceType] !== undefined) ? en[item[2].resourceWithLevels.resourceType] : item[2].resourceWithLevels.resourceType;
             countMap[key].count += incBy;
             if (!countMap[key].details[keyLoc]) countMap[key].details[keyLoc] = 0;
             countMap[key].details[keyLoc] += incBy;
@@ -97,6 +120,7 @@ function wrapper(plugin_info) {
                 countMap[key].count = 0;
                 countMap[key].details = {};
             }
+            countMap[key].displayName = (en[item[2].modResource.resourceType] !== undefined) ? en[item[2].modResource.resourceType] : item[2].modResource.resourceType;
             countMap[key].count += incBy;
             if (!countMap[key].details[keyLoc]) countMap[key].details[keyLoc] = 0;
             countMap[key].details[keyLoc] += incBy;
@@ -150,9 +174,9 @@ function wrapper(plugin_info) {
     thisPlugin.reSortKeys = function (element) {
         var index = $(element).data('index');
         var asc = ($(element).data('asc') === 'asc');
-        thisPlugin.sortKeyList(index,asc);
+        thisPlugin.sortKeyList(index, asc);
         $('#inventoryList').html(displayInventoryHtml());
-        $('#inventoryList table th[data-index="'+index+'"]').attr('data-asc',(asc) ? 'desc' : 'asc');
+        $('#inventoryList table th[data-index="' + index + '"]').attr('data-asc', (asc) ? 'desc' : 'asc');
     }
     thisPlugin.sortKeyList = function (index, asc) {
         if (asc === undefined) {
@@ -248,9 +272,9 @@ function wrapper(plugin_info) {
 
     function displayInventoryHtml() {
         return `<table id="inventoryGear">
-<thead><tr><th class="">Type</th><th class="">Rarity</th><th class="">Count</th></tr></thead><tbody>
+<thead><tr><th class="">Item</th><th class="">Rarity</th><th class="">Count</th></tr></thead><tbody>
 ${thisPlugin.itemCount.map((el) => {
-            return `<tr><td>${en[el.resourceType]}</td><td>${el.flipCardType || el.resourceRarity || el.rarity || el.level}</td><td>${el.count}</td></tr>`;
+            return `<tr><td>${el.displayName}</td><td>${el.resourceRarity || el.rarity || el.level}</td><td>${el.count}</td></tr>`;
         }).join('')}
 </tbody></table><hr/><table id="inventoryKeys"><thead><tr>
 <th class="" data-index="distance" data-asc="asc" onclick="window.plugin.inventoryParser.reSortKeys(this)">Distance</th>
@@ -274,7 +298,7 @@ ${thisPlugin.keyCount.map((el) => {
 
     function displayInventory() {
         dialog({
-            html: '<div id="inventoryList">'+displayInventoryHtml()+'</div>',
+            html: '<div id="inventoryList">' + displayInventoryHtml() + '</div>',
             title: 'Inventory',
             id: 'inventoryList',
             width: 'auto'
@@ -396,6 +420,7 @@ ${thisPlugin.keyCount.map((el) => {
         $.each(thisPlugin.itemCount, function (idx, item) {
             var itemLine = {}
             itemLine.resourceType = item.resourceType;
+            itemLine.displayName = item.displayName;
             itemLine.level = (item.level !== undefined) ? item.level : '';
             itemLine.rarity = (item.resourceRarity !== undefined) ? item.resourceRarity : '';
             if (item.flipCardType !== undefined) {

@@ -1,16 +1,16 @@
 // ==UserScript==
-// @id inventoryParser
-// @name IITC Plugin: Inventory Parser
-// @category Info
-// @version 0.0.3
-// @namespace	https://github.com/633KYN35D/iitc-inventory-parser
-// @downloadURL	https://github.com/633KYN35D/iitc-inventory-parser/raw/main/inventoryParser.user.js
-// @homepageURL	https://github.com/633KYN35D/iitc-inventory-parser/
-// @description Parse Inventory from Ingress
-// @author      633KYN35D
-// @include		https://intel.ingress.com/*
-// @match		https://intel.ingress.com/*
-// @grant			none
+// @id              inventoryParser
+// @name            IITC Plugin: Inventory Parser
+// @category        Info
+// @version         0.0.4
+// @namespace	    https://github.com/633KYN35D/iitc-inventory-parser
+// @downloadURL	    https://github.com/633KYN35D/iitc-inventory-parser/raw/main/inventoryParser.user.js
+// @homepageURL	    https://github.com/633KYN35D/iitc-inventory-parser/
+// @description     Parse Inventory from Ingress
+// @author          633KYN35D with significant code from EisFrei
+// @include		    https://intel.ingress.com/*
+// @match		    https://intel.ingress.com/*
+// @grant		    none
 // ==/UserScript==
 
 function wrapper(plugin_info) {
@@ -34,13 +34,12 @@ function wrapper(plugin_info) {
     };
     window.plugin.inventoryParser = function () {
     };
-
     const thisPlugin = window.plugin.inventoryParser;
     // Name of the IITC build for first-party plugins
     plugin_info.buildName = "inventoryParser";
 
     // Datetime-derived version of the plugin
-    plugin_info.dateTimeVersion = "202102111220";
+    plugin_info.dateTimeVersion = "202102101447";
 
     // ID/name of the plugin
     plugin_info.pluginId = "inventoryParser";
